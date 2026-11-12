@@ -15,7 +15,19 @@
  ],
  "rounds": 7,
  "owner": {},
- "trades": [],
+ "trades": [
+  {
+   "date": "2026-11-12",
+   "a": "Joban",
+   "b": "Angad",
+   "moves": [],
+   "players": {
+    "Joban": "Lamelo Ball, Keaton Wagler",
+    "Angad": "Trae Young, Kon Knueppel"
+   },
+   "note": "Testing"
+  }
+ ],
  "dues": {
   "2027": {
    "Joban": true,
