@@ -1,0 +1,43 @@
+{
+ "teams": [
+  "Joban",
+  "Angad",
+  "Ajay",
+  "Karnvir",
+  "Sartaj",
+  "Maanek",
+  "Vasu",
+  "Jasraj"
+ ],
+ "years": [
+  2027,
+  2028
+ ],
+ "rounds": 7,
+ "owner": {},
+ "trades": [],
+ "dues": {
+  "2027": {
+   "Joban": true,
+   "Angad": true,
+   "Ajay": true,
+   "Karnvir": true,
+   "Sartaj": true,
+   "Maanek": true,
+   "Vasu": true,
+   "Jasraj": true
+  },
+  "2028": {
+   "Joban": false,
+   "Angad": false,
+   "Ajay": false,
+   "Karnvir": false,
+   "Sartaj": false,
+   "Maanek": false,
+   "Vasu": false,
+   "Jasraj": false
+  }
+ },
+ "results": {},
+ "linear": 7
+}
