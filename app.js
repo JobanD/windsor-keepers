@@ -125,7 +125,9 @@ async function signIn(){
  const c={owner:document.getElementById('gho').value.trim(),repo:document.getElementById('ghr').value.trim(),token:document.getElementById('ght').value.trim()};
  if(!c.owner||!c.repo||!c.token){signMsg='Fill in all three.';render();return}
  signMsg='Checking…';render();
- try{const r=await api(c,'');if(!r.ok)throw 0;const j=await r.json();if(!j.permissions||!j.permissions.push){signMsg='That token can read the repo but not write to it.';render();return}
+ let r;try{r=await api(c,'')}catch(e){signMsg='Couldn\'t reach GitHub from this browser. Check your connection and try again.';render();return}
+ try{if(!r.ok){let m='';try{m=(await r.json()).message||''}catch(_){}signMsg=r.status===401?'GitHub says the token is invalid or expired (401). Re-copy it, or make a new one.':r.status===404?`GitHub can't see ${c.owner}/${c.repo} with this token (404). Set Repository access to Only select repositories → windsor-keepers.`:r.status===403?`GitHub refused the token (403): ${m}`:`GitHub error ${r.status}: ${m}`;render();return}
+ const j=await r.json();if(!j.permissions||!j.permissions.push){signMsg='That token can read the repo but not write to it.';render();return}
   c.branch=j.default_branch||'main';try{localStorage.setItem(LS,JSON.stringify(c))}catch(_){signMsg='This browser blocked saving the token.';render();return}
   signMsg='';showSignin=false;await boot()}
  catch(e){signMsg='GitHub didn\'t accept that token for this repo.';render()}
