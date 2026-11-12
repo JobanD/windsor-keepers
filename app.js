@@ -24,16 +24,17 @@ function board(){
   return `<tr><td class="team"><a href="#team-${slug(t)}">${esc(t)}</a><span class="dues" style="color:var(--muted)">${total} picks owned</span></td>${cells}</tr>`}).join('');
  return `<div class="panel scroll"><table><thead><tr><th>Team</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
 /* Draft order: worst finish picks first; rounds 1..S.linear repeat that order, then each later round flips (snake) */
-function hasResults(y){const r=S.results[y];return !!(r&&r.length===S.teams.length&&r.every(t=>S.teams.includes(t)))}
-function roundOrder(y,r){const base=[...S.results[y]].reverse();return (r>S.linear&&(r-S.linear)%2===1)?base.reverse():base}
+function hasResults(y){const r=S.results[y];return !!(r&&r.length===S.teams.length&&r.every(t=>S.teams.includes(t))&&S.teams.includes(S.champ[y]))}
+/* Picks 1-7: non-champions by regular-season standings, worst first. Champion always picks last. */
+function roundOrder(y,r){const c=S.champ[y];const base=[...S.results[y].filter(t=>t!==c)].reverse().concat([c]);return (r>S.linear&&(r-S.linear)%2===1)?base.reverse():base}
 function formatText(){return S.linear>=S.rounds?'every round linear':S.linear<=0?'snake from round 1':S.linear===1?'round 1 linear, then snake':`rounds 1–${S.linear} linear, then snake`}
 function draftOrder(){
  return S.years.map(y=>{
-  if(!hasResults(y))return `<div class="panel"><div class="empty"><b>${y} draft</b> · Order is set once the ${season(y)} season ends and final standings are in.</div></div>`;
+  if(!hasResults(y))return `<div class="panel"><div class="empty"><b>${y} draft</b> · Order is set once the ${season(y)} season ends: regular-season standings plus the champion.</div></div>`;
   const rows=[];for(let r=1;r<=S.rounds;r++){const o=roundOrder(y,r);
    rows.push(`<div class="rd"><span class="rn">R${r}</span><div class="slots">${o.map((t,i)=>{const ow=own(pid(y,r,t));return `<span class="slot${ow!==t?' moved':''}"><i>${r}.${String(i+1).padStart(2,'0')}</i> ${esc(ow)}${ow!==t?` <em>via ${esc(t)}</em>`:''}</span>`}).join('')}</div></div>`)}
-  const st=S.results[y].map((t,i)=>`${ord(i+1)} ${esc(t)}`).join(' · ');
-  return `<div class="panel do"><div class="dohead"><b>${y} draft</b><span class="msg">${formatText()}</span><button class="small" data-act="copy" data-y="${y}">${esc(copyMsg[y]||'Copy order')}</button></div><div class="standline">${season(y)} final: ${st}</div>${rows.join('')}</div>`}).join('')}
+  const st=S.results[y].map((t,i)=>`${ord(i+1)} ${esc(t)}`).join(' · ')+` · Champion: ${esc(S.champ[y])}`;
+  return `<div class="panel do"><div class="dohead"><b>${y} draft</b><span class="msg">${formatText()}</span><button class="small" data-act="copy" data-y="${y}">${esc(copyMsg[y]||'Copy order')}</button></div><div class="standline">${season(y)} regular season: ${st}</div>${rows.join('')}</div>`}).join('')}
 function orderText(y){const lines=[`Windsor Keepers ${y} draft order (${formatText()})`];
  for(let r=1;r<=S.rounds;r++){lines.push(`R${r}: `+roundOrder(y,r).map((t,i)=>{const ow=own(pid(y,r,t));return `${i+1}. ${ow}${ow!==t?` (via ${t})`:''}`}).join(', '))}
  return lines.join('\n')}
@@ -52,10 +53,13 @@ function teamOpts(sel){return S.teams.map(t=>`<option${t===sel?' selected':''}>$
 function pickChecks(team,side){const ks=allPicks().filter(k=>own(k)===team);
  return S.years.map(y=>`<div class="cks">${ks.filter(k=>k.startsWith(y+'|')).map(k=>{const[,r,t]=k.split('|');return `<label class="ck"><input type="checkbox" data-side="${side}" value="${esc(k)}">${y} R${r}${t!==team?' ('+esc(t)+')':''}</label>`}).join('')}</div>`).join('')}
 function standingsTools(){
- return S.years.map(y=>{const r=S.results[y]||[];
-  return `<fieldset class="stand"><legend>${season(y)} final standings → sets the ${y} draft</legend>
-  <div class="names">${S.teams.map((_,i)=>`<label class="f">${ord(i+1)}${i===0?' (champion)':i===S.teams.length-1?' (last)':''}<select data-res="${y}|${i}"><option value="">—</option>${S.teams.map(t=>`<option${r[i]===t?' selected':''}>${esc(t)}</option>`).join('')}</select></label>`).join('')}</div>
-  <div class="row"><button class="primary" data-act="saveres" data-y="${y}">Save ${season(y)} standings</button>${r.length?`<button data-act="clearres" data-y="${y}">Clear</button>`:''}</div></fieldset>`}).join('')}
+ return S.years.map(y=>{const r=S.results[y]||[],c=S.champ[y]||'';
+  const opts=sel=>`<option value="">—</option>${S.teams.map(t=>`<option${sel===t?' selected':''}>${esc(t)}</option>`).join('')}`;
+  return `<fieldset class="stand"><legend>${season(y)} season → sets the ${y} draft</legend>
+  <label class="f" style="max-width:240px">Champion (picks last)<select data-champ="${y}">${opts(c)}</select></label>
+  <div class="msg">Regular-season standings</div>
+  <div class="names">${S.teams.map((_,i)=>`<label class="f">${ord(i+1)}${i===S.teams.length-1?' (last)':''}<select data-res="${y}|${i}">${opts(r[i])}</select></label>`).join('')}</div>
+  <div class="row"><button class="primary" data-act="saveres" data-y="${y}">Save ${season(y)} results</button>${r.length?`<button data-act="clearres" data-y="${y}">Clear</button>`:''}</div></fieldset>`}).join('')}
 let form=null;
 function tools(){
  if(!canEdit)return '';
@@ -73,7 +77,7 @@ function tools(){
   <div class="row"><button class="primary" data-act="log">Log trade</button><span class="msg">Process the players in Yahoo too.</span><span class="msg">${esc(msg)}</span></div>
  </div>
  <details class="panel set"${resMsg?' open':''}><summary>Season results</summary><div class="tools">
-  <p class="msg" style="margin:0">Enter where every team finished: playoffs decide 1st–4th, the consolation bracket decides 5th–8th. The draft order above fills in from this.</p>
+  <p class="msg" style="margin:0">Enter the champion and the final regular-season standings. Picks 1–7 go worst record first, skipping the champion, who always picks last.</p>
   ${standingsTools()}
   ${resMsg?`<span class="msg">${esc(resMsg)}</span>`:''}
  </div></details>
@@ -96,7 +100,7 @@ function nav(v){const on=x=>x===v||(x==='teams'&&v==='team')?' class="on"':'';
 function rulesStrip(){const keepers=15-S.rounds;return `<div class="rules">
   <p>Each team keeps ${keepers} players a year, free, with no contract limit. Each draft is ${S.rounds} rounds for everyone else.</p>
   <p>Picks can be traded for any future draft, as long as your dues are paid for every season up to and including that draft's year.</p>
-  <p>Draft order is worst finish first: playoffs set 1st–4th, the consolation bracket sets 5th–8th. ${formatText().replace(/^./,c=>c.toUpperCase())}. <a href="#rules">Full rulebook →</a></p>
+  <p>Draft order is worst regular-season record first, and the champion always picks last. ${formatText().replace(/^./,c=>c.toUpperCase())}. <a href="#rules">Full rulebook →</a></p>
  </div>`}
 function ledgerView(){return `${rulesStrip()}
  <section style="display:grid;gap:10px"><h2>Pick board</h2><div class="legend"><span class="pk">R1</span>own pick <span class="pk got">R1 · Ajay</span>acquired, original owner <span class="pk gone">R2 → Vasu</span>traded away</div>${board()}</section>
@@ -111,7 +115,7 @@ function teamView(t){
   const n=mine.filter(m=>own(m[2])===t).length;
   return `<div class="tyear"><div class="tyhead"><b>${y}</b><span class="msg">${n} pick${n===1?'':'s'} owned</span><span class="dues ${paid(y,t)?'ok':'no'}">dues ${paid(y,t)?'paid':'not paid'}</span></div><div class="picks">${mine.map(m=>chipFor(m[2],t)).join('')}</div></div>`}).join('');
  const trs=S.trades.filter(x=>x.a===t||x.b===t);
- const res=Object.keys(S.results).sort().map(y=>{const i=S.results[y].indexOf(t);return i<0?'':`<span class="pk">${season(+y)}: ${ord(i+1)}</span>`}).join('');
+ const res=Object.keys(S.results).sort().map(y=>{const i=S.results[y].indexOf(t);return i<0?'':`<span class="pk${S.champ[y]===t?' got':''}">${season(+y)}: ${ord(i+1)} reg. season${S.champ[y]===t?' · 🏆 champion':''}</span>`}).join('');
  return `${teamChips(t)}
  <section style="display:grid;gap:10px"><h2>${esc(t)}</h2>
   <div class="panel tteam">${yrs}${res?`<div class="tyear"><div class="tyhead"><b>Finishes</b></div><div class="picks">${res}</div></div>`:''}</div></section>
@@ -133,7 +137,7 @@ function textToRules(txt){const out=[];let cur=null;
  return out}
 function render(){
  const keep={pa:document.getElementById('pa')?.value||'',pb:document.getElementById('pb')?.value||'',tn:document.getElementById('tn')?.value||'',rbtext:document.getElementById('rbtext')?.value||''};
- const keepRes={};app.querySelectorAll('select[data-res]').forEach(s=>keepRes[s.dataset.res]=s.value);
+ const keepRes={};app.querySelectorAll('select[data-res]').forEach(s=>keepRes[s.dataset.res]=s.value);app.querySelectorAll('select[data-champ]').forEach(s=>keepRes['c'+s.dataset.champ]=s.value);
  const v=view();
  const body=v.v==='rules'?rulesView():v.v==='teams'?teamView(null):v.v==='team'?teamView(v.team):ledgerView();
  app.innerHTML=`<header><h1>Windsor Keepers <span>Pick Ledger</span></h1>
@@ -141,7 +145,7 @@ function render(){
  <span class="badge${canEdit?' edit':''}">${canEdit?'Commissioner view · you can edit':'View only · kept by the commissioner'}</span></header>
  ${nav(v.v)}${body}${signinPanel()}`;
  for(const id in keep){const el=document.getElementById(id);if(el&&keep[id])el.value=keep[id]}
- app.querySelectorAll('select[data-res]').forEach(s=>{if(s.dataset.res in keepRes)s.value=keepRes[s.dataset.res]});
+ app.querySelectorAll('select[data-res]').forEach(s=>{if(s.dataset.res in keepRes)s.value=keepRes[s.dataset.res]});app.querySelectorAll('select[data-champ]').forEach(s=>{const k='c'+s.dataset.champ;if(k in keepRes)s.value=keepRes[k]});
 }
 window.addEventListener('hashchange',()=>{if(location.hash==='#commish')showSignin=true;if(S)render();window.scrollTo(0,0)});
 const LS='wk-ledger-github';
@@ -226,10 +230,11 @@ app.addEventListener('click',async e=>{
   const arr=S.teams.map((_,i)=>app.querySelector(`select[data-res="${y}|${i}"]`).value);
   if(arr.some(v=>!v)){resMsg=`Fill in all ${S.teams.length} spots for ${season(y)}.`;render();return}
   if(new Set(arr).size!==arr.length){resMsg='Each team can only appear once.';render();return}
-  S.results[y]=arr;resMsg='Saving…';save(`${season(y)} final standings`)}
- else if(act==='clearres'){const y=b.dataset.y;delete S.results[y];resMsg='Saving…';save(`Clear ${season(y)} standings`)}
+  const c=app.querySelector(`select[data-champ="${y}"]`).value;if(!c){resMsg=`Pick the ${season(y)} champion.`;render();return}
+  S.results[y]=arr;S.champ[y]=c;resMsg='Saving…';save(`${season(y)} results`)}
+ else if(act==='clearres'){const y=b.dataset.y;delete S.results[y];delete S.champ[y];resMsg='Saving…';save(`Clear ${season(y)} results`)}
  else if(act==='addyear'){S.years.push(Math.max(...S.years)+1);readSettings();save('Add draft year')}
- else if(act==='dropyear'){if(S.years.length<2)return;const y=Math.min(...S.years);S.years=S.years.filter(x=>x!==y);Object.keys(S.owner).forEach(k=>{if(k.startsWith(y+'|'))delete S.owner[k]});delete S.dues[y];delete S.results[y];readSettings();save('Drop draft year')}
+ else if(act==='dropyear'){if(S.years.length<2)return;const y=Math.min(...S.years);S.years=S.years.filter(x=>x!==y);Object.keys(S.owner).forEach(k=>{if(k.startsWith(y+'|'))delete S.owner[k]});delete S.dues[y];delete S.results[y];delete S.champ[y];readSettings();save('Drop draft year')}
  else if(act==='saverules'){const rb=textToRules(document.getElementById('rbtext').value);if(!rb.length){rbMsg='The rulebook can\'t be empty.';render();return}S.rulebook=rb;rbMsg='Saving…';save('Update rulebook')}
  else if(act==='savesettings'){readSettings();save('Update dues and settings')}
 });
@@ -240,7 +245,7 @@ function readSettings(){
   const owner={};Object.entries(S.owner).forEach(([k,v])=>{const[y,r,t]=k.split('|');owner[pid(y,r,R(t))]=R(v)});S.owner=owner;
   S.trades.forEach(tr=>{tr.a=R(tr.a);tr.b=R(tr.b);tr.moves.forEach(m=>{const[y,r,t]=m.pick.split('|');m.pick=pid(y,r,R(t));m.from=R(m.from);m.to=R(m.to)});const p={};Object.entries(tr.players||{}).forEach(([k,v])=>p[R(k)]=v);tr.players=p});
   Object.values(S.dues).forEach(d=>Object.keys(d).forEach(k=>{if(ren[k]){d[ren[k]]=d[k];delete d[k]}}));
-  Object.keys(S.results).forEach(y=>{S.results[y]=S.results[y].map(R)});
+  Object.keys(S.results).forEach(y=>{S.results[y]=S.results[y].map(R)});Object.keys(S.champ).forEach(y=>{S.champ[y]=R(S.champ[y])});
   S.teams=S.teams.map(R);form.a=R(form.a);form.b=R(form.b)}
  const r=parseInt(document.getElementById('rounds').value,10);if(r>=1&&r<=15)S.rounds=r;
  const l=parseInt(document.getElementById('linear').value,10);if(l>=0&&l<=15)S.linear=l;
@@ -252,7 +257,7 @@ async function boot(){
    if(r.ok){const j=await r.json();S=JSON.parse(b64d(j.content));baseSha=j.sha;canEdit=true}}
  }catch(e){}
  if(!S||!canEdit){try{const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});S=await r.json()}catch(e){app.innerHTML='<p class="empty">Couldn\'t load data.json.</p>';return}}
- S.results=S.results||{};if(typeof S.linear!=='number')S.linear=7;
+ S.results=S.results||{};S.champ=S.champ||{};if(typeof S.linear!=='number')S.linear=7;
  if(!form||!S.teams.includes(form.a))form={a:S.teams[0],b:S.teams[1],date:new Date().toISOString().slice(0,10)};
  render();
 }

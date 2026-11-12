@@ -29,7 +29,8 @@ There are two ways, and both just change `data.json`:
 - `owner`: only picks that have changed hands, as `"YEAR|ROUND|ORIGINAL_TEAM": "CURRENT_OWNER"`. A pick that isn't listed belongs to its original team.
 - `trades`: the log, oldest first. Each entry is `{date, a, b, moves:[{pick, from, to}], players:{team: "names"}, note}`
 - `dues`: `{"2027": {"Joban": true, ...}}`. Trading a pick needs dues paid for every year up to and including that pick's year
-- `results`: final standings, champion first, keyed by the draft year they set, e.g. `"2027": [...]` for the 2026–27 season
+- `results`: regular-season standings (1st to last), keyed by the draft year they set, e.g. `"2027": [...]` for the 2026–27 season
+- `champ`: that season's champion, e.g. `"2027": "Joban"`. Draft order is the non-champions worst record first, then the champion last
 - `rulebook`: list of `{title, items:[...]}` sections shown on the Rulebook tab (also editable on the page)
 - `updated`: date of the last save from the page
 
@@ -45,4 +46,4 @@ The token is stored only in your browser (localStorage) and is only sent to api.
 
 ## Yearly
 
-After the playoffs and consolation bracket finish, enter the standings in **Season results**. After each draft, use **Drop [year]** to retire it, and **Add [year]** whenever you want another year of picks on the board.
+After the playoffs, enter the champion and regular-season standings in **Season results**. After each draft, use **Drop [year]** to retire it, and **Add [year]** whenever you want another year of picks on the board.

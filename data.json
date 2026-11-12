@@ -112,7 +112,7 @@
    "items": [
     "The 2026 startup draft was an auction.",
     "Every draft after that is 7 rounds for rookies and non-kept players, fully linear.",
-    "Draft order is worst finish first. Playoffs decide 1st\u20134th, the consolation bracket decides 5th\u20138th.",
+    "Draft order is worst regular-season record first for picks 1\u20137. The champion always picks last.",
     "Last place punishment: TBD."
    ]
   },
@@ -121,7 +121,7 @@
    "items": [
     "4 teams make the playoffs.",
     "Payouts are based on playoff results only. No money for regular-season standings.",
-    "Payout split: TBD."
+    "Payout split: 1st $600, 2nd $150, 3rd $50."
    ]
   },
   {
@@ -140,5 +140,6 @@
     "Every trade is logged on this site, which is the official record for picks."
    ]
   }
- ]
+ ],
+ "champ": {}
 }
