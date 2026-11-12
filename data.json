@@ -89,5 +89,56 @@
  },
  "results": {},
  "linear": 7,
- "updated": "Nov 12, 2026"
+ "updated": "Nov 12, 2026",
+ "rulebook": [
+  {
+   "title": "League",
+   "items": [
+    "8 teams, 9-category head-to-head on Yahoo.",
+    "Lineups lock weekly.",
+    "15 roster spots plus 3 IR spots. IR is for players listed OUT only.",
+    "Waivers process on Sundays, so claims count for the next week's lineup."
+   ]
+  },
+  {
+   "title": "Keepers",
+   "items": [
+    "Each team keeps 8 players every season.",
+    "Keepers are free: no salary, no contract and no limit on how many years you keep a player."
+   ]
+  },
+  {
+   "title": "Draft",
+   "items": [
+    "The 2026 startup draft was an auction.",
+    "Every draft after that is 7 rounds for rookies and non-kept players, fully linear.",
+    "Draft order is worst finish first. Playoffs decide 1st\u20134th, the consolation bracket decides 5th\u20138th.",
+    "Last place punishment: TBD."
+   ]
+  },
+  {
+   "title": "Playoffs and payouts",
+   "items": [
+    "4 teams make the playoffs.",
+    "Payouts are based on playoff results only. No money for regular-season standings.",
+    "Payout split: TBD."
+   ]
+  },
+  {
+   "title": "Dues",
+   "items": [
+    "$100 per team per season.",
+    "Seasons 1 and 2 were paid upfront. After that, dues are always paid one season ahead.",
+    "Leave the league early and your prepaid dues go to whoever takes over your team."
+   ]
+  },
+  {
+   "title": "Trades",
+   "items": [
+    "Players are traded through Yahoo as normal.",
+    "Picks can be traded for any future draft, as long as the team has paid dues for every season up to and including that pick's year.",
+    "Every trade is logged on this site, which is the official record for picks."
+   ]
+  }
+ ]
 }

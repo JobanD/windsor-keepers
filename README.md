@@ -2,6 +2,12 @@
 
 The official record of who owns every future draft pick in the Windsor Keepers league, plus the trade log, dues, and each year's draft order. Yahoo only handles players.
 
+## Pages
+
+- `#ledger` (default): pick board, draft order, trade log, commissioner tools
+- `#teams` and `#team-<name>`: one team's picks, dues, finishes and trades
+- `#rules`: the league rulebook
+
 ## Files
 
 - `data.json` holds all the data. It's the ledger itself.
@@ -24,6 +30,7 @@ There are two ways, and both just change `data.json`:
 - `trades`: the log, oldest first. Each entry is `{date, a, b, moves:[{pick, from, to}], players:{team: "names"}, note}`
 - `dues`: `{"2027": {"Joban": true, ...}}`. Trading a pick needs dues paid for every year up to and including that pick's year
 - `results`: final standings, champion first, keyed by the draft year they set, e.g. `"2027": [...]` for the 2026–27 season
+- `rulebook`: list of `{title, items:[...]}` sections shown on the Rulebook tab (also editable on the page)
 - `updated`: date of the last save from the page
 
 ## Token for commissioner mode
