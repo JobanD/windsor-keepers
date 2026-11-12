@@ -94,7 +94,7 @@ function render(){
  <div class="rules">
   <p>Each team keeps ${keepers} players a year, free, with no contract limit. Each draft is ${S.rounds} rounds for everyone else.</p>
   <p>Dues are $100 a season, always paid one season ahead. Leave early and your prepaid dues go to whoever takes over your team.</p>
-  <p>Picks can be traded up to two drafts out, and only once that year's dues are paid.</p>
+  <p>Picks can be traded for any future draft, as long as your dues are paid for every season up to and including that draft's year.</p>
   <p>Draft order is worst finish first: playoffs set 1st–4th, the consolation bracket sets 5th–8th. ${formatText().replace(/^./,c=>c.toUpperCase())}.</p>
  </div>
  <section style="display:grid;gap:10px"><h2>Pick board</h2><div class="legend"><span class="pk">R1</span>own pick <span class="pk got">R1 · Ajay</span>acquired, original owner <span class="pk gone">R2 → Vasu</span>traded away</div>${board()}</section>
@@ -150,8 +150,9 @@ function collect(){const g=s=>[...app.querySelectorAll(`input[data-side="${s}"]:
 function check(t){
  if(t.a===t.b)return{err:'Pick two different teams.'};
  if(!t.pa.length&&!t.pb.length&&!t.playersA&&!t.playersB)return{err:'Add at least one player or pick.'};
- const unpaid=[];[[t.a,t.pa],[t.b,t.pb]].forEach(([team,ks])=>ks.forEach(k=>{const y=k.split('|')[0];if(!paid(y,team))unpaid.push(`${team} (${y})`)}));
- if(unpaid.length)return{warn:`Dues not marked paid for ${[...new Set(unpaid)].join(', ')}. League rules say those picks can't be traded yet.`};
+ const owe={};[[t.a,t.pa],[t.b,t.pb]].forEach(([team,ks])=>ks.forEach(k=>{const y=+k.split('|')[0];S.years.filter(x=>x<=y&&!paid(x,team)).forEach(x=>{(owe[team]=owe[team]||new Set()).add(x)})}));
+ const list=Object.entries(owe).map(([team,ys])=>`${team} (${[...ys].sort().join(', ')})`);
+ if(list.length)return{warn:`Dues not marked paid for ${list.join('; ')}. League rules say a team has to be paid up through a pick's year before trading it.`};
  return{};
 }
 function apply(t){

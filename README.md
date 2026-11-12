@@ -17,12 +17,12 @@ There are two ways, and both just change `data.json`:
 ### data.json format
 
 - `teams`: team names, in display order
-- `years`: draft years that are open for trading (keep two)
+- `years`: draft years shown on the board and open for trading (add more any time)
 - `rounds`: rounds per draft (15 roster minus 8 keepers = 7)
 - `linear`: linear rounds before snaking (7 = fully linear)
 - `owner`: only picks that have changed hands, as `"YEAR|ROUND|ORIGINAL_TEAM": "CURRENT_OWNER"`. A pick that isn't listed belongs to its original team.
 - `trades`: the log, oldest first. Each entry is `{date, a, b, moves:[{pick, from, to}], players:{team: "names"}, note}`
-- `dues`: `{"2027": {"Joban": true, ...}}`
+- `dues`: `{"2027": {"Joban": true, ...}}`. Trading a pick needs dues paid for every year up to and including that pick's year
 - `results`: final standings, champion first, keyed by the draft year they set, e.g. `"2027": [...]` for the 2026–27 season
 - `updated`: date of the last save from the page
 
@@ -38,4 +38,4 @@ The token is stored only in your browser (localStorage) and is only sent to api.
 
 ## Yearly
 
-After the playoffs and consolation bracket finish, enter the standings in **Season results**. After the draft, use **Drop [year]** and **Add [year]** so two future drafts are always open.
+After the playoffs and consolation bracket finish, enter the standings in **Season results**. After each draft, use **Drop [year]** to retire it, and **Add [year]** whenever you want another year of picks on the board.
