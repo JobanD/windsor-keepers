@@ -14,8 +14,46 @@
   2028
  ],
  "rounds": 7,
- "owner": {},
- "trades": [],
+ "owner": {
+  "2027|3|Joban": "Angad",
+  "2028|2|Joban": "Angad",
+  "2027|1|Angad": "Joban",
+  "2028|1|Angad": "Joban"
+ },
+ "trades": [
+  {
+   "date": "2026-11-12",
+   "a": "Joban",
+   "b": "Angad",
+   "moves": [
+    {
+     "pick": "2027|3|Joban",
+     "from": "Joban",
+     "to": "Angad"
+    },
+    {
+     "pick": "2028|2|Joban",
+     "from": "Joban",
+     "to": "Angad"
+    },
+    {
+     "pick": "2027|1|Angad",
+     "from": "Angad",
+     "to": "Joban"
+    },
+    {
+     "pick": "2028|1|Angad",
+     "from": "Angad",
+     "to": "Joban"
+    }
+   ],
+   "players": {
+    "Joban": "Lamelo Ball, Keaton Wagler",
+    "Angad": "Trae Young, Kon Knueppel"
+   },
+   "note": "Testing"
+  }
+ ],
  "dues": {
   "2027": {
    "Joban": true,
