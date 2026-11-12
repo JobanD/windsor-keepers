@@ -28,8 +28,8 @@
    "Jasraj": true
   },
   "2028": {
-   "Joban": false,
-   "Angad": false,
+   "Joban": true,
+   "Angad": true,
    "Ajay": false,
    "Karnvir": false,
    "Sartaj": false,
@@ -39,5 +39,6 @@
   }
  },
  "results": {},
- "linear": 7
+ "linear": 7,
+ "updated": "Nov 12, 2026"
 }
